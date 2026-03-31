@@ -1,0 +1,67 @@
+name: Build ZMK
+
+on:
+  push:
+    branches: [ main, copilot/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: zmk-config
+
+      - name: Checkout ZMK main repo
+        uses: actions/checkout@v3
+        with:
+          repository: zmkfirmware/zmk
+          path: zmk
+
+      - name: Install dependencies
+        run: |
+          cd zmk
+          apt-get update
+          apt-get install -y \
+            git \
+            cmake \
+            ninja-build \
+            device-tree-compiler \
+            libffi-dev \
+            libssl-dev \
+            lz4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install West
+        run: pip install west
+
+      - name: Initialize West workspace
+        working-directory: zmk
+        run: |
+          west init -l --manifest-rev main
+          west update
+
+      - name: Install Python dependencies
+        working-directory: zmk
+        run: pip install -r scripts/requirements.txt
+
+      - name: Build firmware
+        working-directory: zmk
+        run: |
+          west build -s app -b nice_nano_33 ../zmk-config -- \
+            -DSHIELD=nice_nano_oled \
+            -DKEYMAP_PATH="../zmk-config/config"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: firmware
+          path: zmk/build/zephyr/
