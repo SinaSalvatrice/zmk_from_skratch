@@ -43,24 +43,21 @@ jobs:
         run: pip install west
 
       - name: Initialize West workspace
-        working-directory: zmk
         run: |
-          west init -l
+          west init -l zmk
           west update
 
       - name: Install Python dependencies
-        working-directory: zmk
-        run: pip install -r scripts/requirements.txt
+        run: pip install -r zmk/scripts/requirements.txt
 
       - name: Build firmware
-        working-directory: zmk
         run: |
-          west build -s app -b nice_nano_33 ../zmk-config -- \
+          west build -s zmk/app -b nice_nano_33 zmk-config -- \
             -DSHIELD=nice_nano_oled \
-            -DKEYMAP_PATH="../zmk-config/config"
+            -DKEYMAP_PATH="zmk-config/config"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: zmk/build/zephyr/
+          path: build/zephyr/
