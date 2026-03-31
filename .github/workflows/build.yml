@@ -38,15 +38,17 @@ jobs:
         run: |
           west init -l .
           west update
+          west zephyr-export
           echo "=== West workspace initialized ==="
           ls -la
 
       - name: Install Python dependencies
         run: |
-          if [ -f zmk/scripts/requirements.txt ]; then
-            pip install -r zmk/scripts/requirements.txt
-          elif [ -f zmk/scripts/requirements-base.txt ]; then
-            pip install -r zmk/scripts/requirements-base.txt
+          ZMK_DIR=$(west topdir)/zmk
+          if [ -f "$ZMK_DIR/scripts/requirements.txt" ]; then
+            pip install -r "$ZMK_DIR/scripts/requirements.txt"
+          elif [ -f "$ZMK_DIR/scripts/requirements-base.txt" ]; then
+            pip install -r "$ZMK_DIR/scripts/requirements-base.txt"
           else
             echo "No requirements found, skipping Python deps"
           fi
