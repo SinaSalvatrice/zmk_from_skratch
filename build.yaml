@@ -1,3 +1,2 @@
 include:
   - board: nice_nano_33
-    shield: nice_nano_oled

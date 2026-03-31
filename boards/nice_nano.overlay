@@ -1,5 +1,11 @@
 #include <dt-bindings/zmk/matrix.h>
 
+/ {
+	chosen {
+		zmk,display = &oled;
+	};
+};
+
 &i2c0 {
 	status = "okay";
 	compatible = "nordic,nrf-twim";

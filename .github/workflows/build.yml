@@ -42,10 +42,16 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r zmk/scripts/requirements.txt
 
+      - name: Debug - List directory structure
+        run: |
+          echo "=== Workspace structure ==="
+          find . -maxdepth 3 -type f \( -name "*.overlay" -o -name "*.conf" -o -name "*.keymap" -o -name "west.yml" \) | head -20
+          echo "=== Config directory ==="
+          ls -la config/ 2>/dev/null || echo "No config/ directory"
+
       - name: Build firmware
         run: |
-          west build -s zmk/app -b nice_nano_33 -- \
-            -DSHIELD=nice_nano_oled
+          west build -s zmk/app -b nice_nano_33 config
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
