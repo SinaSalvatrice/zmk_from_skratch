@@ -36,7 +36,7 @@ jobs:
 
       - name: Initialize West workspace
         run: |
-          west init -l zmk-config
+          west init -l .
           west update
 
       - name: Install Python dependencies
