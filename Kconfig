@@ -1,8 +1,1 @@
-if SHIELD_NICE_NANO_OLED
-
-config SHIELD_NICE_NANO_OLED
-	bool "Nice Nano OLED Shield"
-	select ZMK_DISPLAY
-	select ZMK_DISPLAY_STATUS_SCREEN_BUILT_IN
-
-endif
+# ZMK Configuration namespace
