@@ -1,2 +1,12 @@
 include:
   - board: nice_nano_33
+
+config:
+  ZMK_DISPLAY: y
+  ZMK_DISPLAY_STATUS_SCREEN_BUILT_IN: y
+  ZMK_DISPLAY_WORK_QUEUE_DEDICATED: y
+  I2C: y
+  I2C_NRFX_TWIM0: y
+  ZMK_BLE: y
+  ZMK_USB: y
+

@@ -38,16 +38,29 @@ jobs:
         run: |
           west init -l .
           west update
+          echo "=== West workspace initialized ==="
+          ls -la
 
       - name: Install Python dependencies
-        run: pip install -r zmk/scripts/requirements.txt
+        run: |
+          if [ -f zmk/scripts/requirements.txt ]; then
+            pip install -r zmk/scripts/requirements.txt
+          elif [ -f zmk/scripts/requirements-base.txt ]; then
+            pip install -r zmk/scripts/requirements-base.txt
+          else
+            echo "No requirements found, skipping Python deps"
+          fi
 
       - name: Debug - List directory structure
         run: |
           echo "=== Workspace structure ==="
           find . -maxdepth 3 -type f \( -name "*.overlay" -o -name "*.conf" -o -name "*.keymap" -o -name "west.yml" \) | head -20
-          echo "=== Config directory ==="
+          echo "=== Top-level directories ==="
+          ls -la
+          echo "=== Config files ==="
           ls -la config/ 2>/dev/null || echo "No config/ directory"
+          echo "=== ZMK directory ==="
+          ls -la zmk/ 2>/dev/null | head -20 || echo "No zmk/ directory"
 
       - name: Build firmware
         run: |
