@@ -11,16 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout config repository
         uses: actions/checkout@v4
-        with:
-          path: zmk-config
-
-      - name: Checkout ZMK main repo
-        uses: actions/checkout@v4
-        with:
-          repository: zmkfirmware/zmk
-          path: zmk
 
       - name: Install dependencies
         run: |
@@ -44,7 +36,7 @@ jobs:
 
       - name: Initialize West workspace
         run: |
-          west init -l zmk
+          west init -l zmk-config
           west update
 
       - name: Install Python dependencies
@@ -52,9 +44,8 @@ jobs:
 
       - name: Build firmware
         run: |
-          west build -s zmk/app -b nice_nano_33 zmk-config -- \
-            -DSHIELD=nice_nano_oled \
-            -DKEYMAP_PATH="zmk-config/config"
+          west build -s zmk/app -b nice_nano_33 -- \
+            -DSHIELD=nice_nano_oled
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
