@@ -1,70 +1,74 @@
-# ZMK Unified Base - Nice Nano OLED Shield
+# ZMK Unified Base - Nice Nano OLED
 
-A minimal ZMK keyboard firmware configuration with OLED (SSD1306) display support for the Nice Nano.
+A minimal ZMK keyboard firmware configuration with OLED (SSD1306) display support for the Nice Nano microcontroller.
 
 ## Features
 
-- ✅ SSD1306 OLED Display (128x64)
-- ✅ I2C Communication
+- ✅ SSD1306 OLED Display (128x64) via I2C
+- ✅ Nice Nano (nRF52840) with BLE & USB
 - ✅ Basic QWERTY Keymap
-- ✅ GitHub Actions Build Workflow
+- ✅ GitHub Actions CI/CD Workflow
 
 ## Hardware
 
 - **Microcontroller**: Nice Nano (nRF52840)
 - **Display**: SSD1306 128x64 OLED
-- **Communication**: I2C (SDA/SCL on GPIO3/GPIO2)
+- **Connection**: I2C (SDA on GPIO3, SCL on GPIO2)
+- **Display Address**: 0x3c
 
-## Configuration
-
-### Directory Structure
+## Project Structure
 
 ```
-├── boards/           # Board overlays
-├── config/           # ZMK configuration files
-├── dts/             # Device tree bindings
+├── boards/
+│   └── nice_nano.overlay      # OLED & I2C hardware config
+├── config/
+│   ├── nice_nano.conf         # ZMK feature flags
+│   └── nice_nano.keymap       # Keyboard layout
 ├── .github/
-│   └── workflows/   # CI/CD workflows
-├── build.yaml       # Build configuration
-├── Kconfig          # Kconfig options
-└── README.md        # This file
+│   └── workflows/
+│       └── build.yml          # Automated CI/CD build
+├── build.yaml                 # Build target config
+├── west.yml                   # Workspace manifest
+└── README.md                  # This file
 ```
-
-### Files
-
-- `boards/nice_nano.overlay` - Hardware I2C and OLED configuration
-- `config/nice_nano.conf` - ZMK feature configuration
-- `config/nice_nano.keymap` - Keyboard keymap definition
-- `nice_nano_oled.shield.overlay` - Shield overlay for OLED
-- `.github/workflows/build.yml` - Automated build workflow
 
 ## Building
 
-### Local Build
+### GitHub Actions (Automated)
+Push to `main` or `copilot/*` branches, or open a PR. The workflow will automatically build and upload firmware artifacts.
 
+### Local Build (if you have ZMK environment)
 ```bash
-west build -s app -b nice_nano_33 -- -DSHIELD=nice_nano_oled
+west build -s zmk/app -b nice_nano_33 config
 ```
 
-### Remote Build (GitHub Actions)
+## Configuration
 
-Push to main branch or create a pull request. The workflow will automatically build the firmware.
-
-## OLED Display
-
+### OLED Settings
 - **Resolution**: 128x64 pixels
-- **Interface**: I2C @ 0x3c
-- **Features**: Status screen built-in
-- **Pins**: SDA (GPIO3), SCL (GPIO2)
+- **Interface**: I2C @ address 0x3c
+- **Status Display**: Built-in (auto-enabled)
+- **Colors**: Inverted
+
+### I2C Pins (Nice Nano)
+- **SDA**: GPIO3
+- **SCL**: GPIO2
+- **Pull-ups**: 10kΩ recommended
 
 ## Customization
 
-Edit `config/nice_nano.keymap` to customize your keyboard layout.
+Edit `config/nice_nano.keymap` to change the keyboard layout.
 
 ## Troubleshooting
 
-If OLED doesn't display:
-1. Verify I2C pins are correct (SDA/SCL)
-2. Check power and ground connections
-3. Ensure SSD1306 is at I2C address 0x3c
-4. Rebuild and reflash firmware
+**OLED not displaying:**
+- Verify I2C wiring (SDA/SCL pins)
+- Check SSD1306 is at address 0x3c
+- Ensure power/ground connections
+- Check `boards/nice_nano.overlay` I2C configuration
+
+**Build fails on GitHub Actions:**
+- Check workflow logs for error details
+- Verify `config/nice_nano.conf` has valid CONFIG_* flags
+- Ensure west.yml is properly formatted
+
