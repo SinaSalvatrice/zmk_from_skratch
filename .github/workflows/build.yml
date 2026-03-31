@@ -1,0 +1,60 @@
+name: Build ZMK
+
+on:
+  push:
+    branches: [ main, copilot/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout config repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git \
+            cmake \
+            ninja-build \
+            device-tree-compiler \
+            libffi-dev \
+            libssl-dev \
+            lz4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install West
+        run: pip install west
+
+      - name: Initialize West workspace
+        run: |
+          west init -l .
+          west update
+
+      - name: Install Python dependencies
+        run: pip install -r zmk/scripts/requirements.txt
+
+      - name: Debug - List directory structure
+        run: |
+          echo "=== Workspace structure ==="
+          find . -maxdepth 3 -type f \( -name "*.overlay" -o -name "*.conf" -o -name "*.keymap" -o -name "west.yml" \) | head -20
+          echo "=== Config directory ==="
+          ls -la config/ 2>/dev/null || echo "No config/ directory"
+
+      - name: Build firmware
+        run: |
+          west build -s zmk/app -b nice_nano_33 config
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: build/zephyr/
