@@ -10,6 +10,7 @@ manifest:
       remote: zmkfirmware
       revision: main
       clone-depth: 1
+      import: app/west.yml
 
   self:
     path: config
